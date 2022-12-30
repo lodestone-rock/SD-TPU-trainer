@@ -106,6 +106,11 @@ def parse_args():
         help="convert model parameters binary precision",
     )
     parser.add_argument(
+        "--persistent_workers",
+        action="store_true",
+        help="set dataloader worker to persist in the background",
+    )
+    parser.add_argument(
         "--train_data_dir",
         type=str,
         default=None,
@@ -420,7 +425,14 @@ def main():
     n_workers = psutil.cpu_count(logical = False) - args.set_num_of_unused_core
     total_train_batch_size = args.train_batch_size * jax.local_device_count()
     train_dataloader = torch.utils.data.DataLoader(
-        train_dataset, shuffle=True, num_workers=n_workers, prefetch_factor=args.prefetch_image, collate_fn=collate_fn, batch_size=total_train_batch_size, drop_last=True, persistent_workers=True
+                                                    train_dataset, 
+                                                    shuffle=True, 
+                                                    num_workers=n_workers, 
+                                                    prefetch_factor=args.prefetch_image, 
+                                                    collate_fn=collate_fn, 
+                                                    batch_size=total_train_batch_size, 
+                                                    drop_last=True, 
+                                                    persistent_workers=args.persistent_workers
     )
 
 # Set model weight dtype
@@ -445,7 +457,6 @@ def main():
     if args.convert_param_dtype:
         unet_params = convert_dtype(unet_params, weight_dtype)
         vae_params = convert_dtype(vae_params, weight_dtype)
-
 
 # Optimizer
     if args.scale_lr:
