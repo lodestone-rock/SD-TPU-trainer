@@ -1,6 +1,6 @@
 import os
 
-os.environ["OMP_NUM_THREADS"]=16
+os.environ["OMP_NUM_THREADS"]="16"
 os.environ["OMP_PROC_BIND"]="TRUE"
 
 
