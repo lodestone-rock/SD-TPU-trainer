@@ -101,6 +101,11 @@ def parse_args():
         help="print out jax profiler result difference before and after the training batch",
     )
     parser.add_argument(
+        "--convert_param_dtype",
+        action="store_true",
+        help="convert model parameters binary precision",
+    )
+    parser.add_argument(
         "--train_data_dir",
         type=str,
         default=None,
@@ -265,6 +270,10 @@ dataset_name_mapping = {
 def get_params_to_save(params):
     return jax.device_get(jax.tree_util.tree_map(lambda x: x[0], params))
 
+
+def convert_dtype(xs, dtype):
+    
+    return jax.tree_util.tree_map(lambda x: jnp.asarray(x, dtype=dtype), xs)
 
 def main():
     args = parse_args()
@@ -433,6 +442,11 @@ def main():
         args.pretrained_model_name_or_path, subfolder="unet", dtype=weight_dtype
     )
 
+    if args.convert_param_dtype:
+        unet_params = convert_dtype(unet_params, weight_dtype)
+        vae_params = convert_dtype(vae_params, weight_dtype)
+
+
 # Optimizer
     if args.scale_lr:
         args.learning_rate = args.learning_rate * total_train_batch_size
@@ -527,6 +541,9 @@ def main():
 # Replicate the train state on each device
     state = jax_utils.replicate(state)
     text_encoder_params = jax_utils.replicate(text_encoder.params)
+    if args.convert_param_dtype:
+
+        text_encoder_params = convert_dtype(text_encoder_params, weight_dtype)
     vae_params = jax_utils.replicate(vae_params)
 
 # Train!
@@ -558,7 +575,7 @@ def main():
         # train
         for batch in train_dataloader:
 
-            if args.enable_jax_profiler_at_start or show_tpu_usage_delta:
+            if args.enable_jax_profiler_at_start or args.show_tpu_usage_delta:
                 jax.profiler.save_device_memory_profile("prior_memory{steps}.prof".format(steps=global_step + 1))
                         
             state, train_metric, train_rngs = p_train_step(state, text_encoder_params, vae_params, batch, train_rngs)
@@ -570,7 +587,7 @@ def main():
             if global_step >= args.max_train_steps:
                 break
             
-            if args.enable_jax_profiler_at_end or args.show_tpu_usage or show_tpu_usage_delta:
+            if args.enable_jax_profiler_at_end or args.show_tpu_usage or args.show_tpu_usage_delta:
                 jax.profiler.save_device_memory_profile("memory{steps}.prof".format(steps=global_step))
             if args.show_tpu_usage:
                 os.system("~/go/bin/pprof -tags memory{steps}.prof".format(steps=global_step))
