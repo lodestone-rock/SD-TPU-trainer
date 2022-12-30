@@ -81,6 +81,26 @@ def parse_args():
         help="set number of unused physical cores",
     )
     parser.add_argument(
+        "--enable_jax_profiler_at_end",
+        action="store_true",
+        help="enable jax profiler to capture device profile at the end of batch",
+    )
+    parser.add_argument(
+        "--enable_jax_profiler_at_start",
+        action="store_true",
+        help="enable jax profiler to capture device profile at the start of batch",
+    )
+    parser.add_argument(
+        "--show_tpu_usage",
+        action="store_true",
+        help="print out jax profiler result",
+    )
+    parser.add_argument(
+        "--show_tpu_usage_delta",
+        action="store_true",
+        help="print out jax profiler result difference before and after the training batch",
+    )
+    parser.add_argument(
         "--train_data_dir",
         type=str,
         default=None,
@@ -538,7 +558,8 @@ def main():
         # train
         for batch in train_dataloader:
 
-            #jax.profiler.save_device_memory_profile("prior_memory{steps}.prof".format(steps=global_step + 1))
+            if args.enable_jax_profiler_at_start or show_tpu_usage_delta:
+                jax.profiler.save_device_memory_profile("prior_memory{steps}.prof".format(steps=global_step + 1))
                         
             state, train_metric, train_rngs = p_train_step(state, text_encoder_params, vae_params, batch, train_rngs)
             train_metrics.append(train_metric)
@@ -548,9 +569,13 @@ def main():
             global_step += 1
             if global_step >= args.max_train_steps:
                 break
-
-            #jax.profiler.save_device_memory_profile("memory{steps}.prof".format(steps=global_step))
-            #os.system("~/go/bin/pprof -tags --diff_base prior_memory{steps}.prof memory{steps}.prof".format(steps=global_step))
+            
+            if args.enable_jax_profiler_at_end or args.show_tpu_usage or show_tpu_usage_delta:
+                jax.profiler.save_device_memory_profile("memory{steps}.prof".format(steps=global_step))
+            if args.show_tpu_usage:
+                os.system("~/go/bin/pprof -tags memory{steps}.prof".format(steps=global_step))
+            if args.show_tpu_usage_delta:    
+                os.system("~/go/bin/pprof -tags --diff_base prior_memory{steps}.prof memory{steps}.prof".format(steps=global_step))
             
 
 
