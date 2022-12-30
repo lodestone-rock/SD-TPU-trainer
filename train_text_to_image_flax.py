@@ -566,8 +566,8 @@ def main():
 
     args.num_train_epochs = math.ceil(args.max_train_steps / num_update_steps_per_epoch)
     
-    if args.enable_jax_profiler_at_end or args.show_tpu_usage or args.show_tpu_usage_delta:
-        print(args.show_tpu_usage)
+    
+    print(args.show_tpu_usage)
 
     logger.info("***** Running training *****")
     logger.info(f"  Num examples = {len(train_dataset)}")
