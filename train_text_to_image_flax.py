@@ -567,7 +567,7 @@ def main():
     args.num_train_epochs = math.ceil(args.max_train_steps / num_update_steps_per_epoch)
     
     
-    print(args.show_tpu_usage)
+    #print(args.show_tpu_usage)
 
     logger.info("***** Running training *****")
     logger.info(f"  Num examples = {len(train_dataset)}")
