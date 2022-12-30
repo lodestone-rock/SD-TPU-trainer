@@ -496,7 +496,7 @@ def main():
     #jit_train_step = jax.jit(train_step, donate_argnums=(0,), backend="cpu")
 
 # Create parallel version of the train step
-    p_train_step = jax.pmap(jit_train_step, "batch", donate_argnums=(0,))
+    p_train_step = jax.pmap(train_step, "batch", donate_argnums=(0,))
 
 # Replicate the train state on each device
     state = jax_utils.replicate(state)
