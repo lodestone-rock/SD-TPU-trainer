@@ -493,7 +493,7 @@ def main():
 
         return new_state, metrics, new_train_rng
     
-    jit_train_step = jax.jit(train_step, donate_argnums=(0,), backend="CPU")
+    jit_train_step = jax.jit(train_step, donate_argnums=(0,), backend="cpu")
 
 # Create parallel version of the train step
     p_train_step = jax.pmap(jit_train_step, "batch", donate_argnums=(0,))
