@@ -1,13 +1,7 @@
-import os
-
-os.environ["OMP_NUM_THREADS"]="8"
-os.environ["OMP_PROC_BIND"]="TRUE"
-
-
 import argparse
 import logging
 import math
-
+import os
 import subprocess
 import random
 from pathlib import Path
@@ -388,7 +382,7 @@ def main():
         batch = shard(batch)
 
         return batch
-    n_workers = int(psutil.cpu_count(logical = False) / 8) - 2
+    n_workers = psutil.cpu_count(logical = False) - 2
     total_train_batch_size = args.train_batch_size * jax.local_device_count()
     train_dataloader = torch.utils.data.DataLoader(
         train_dataset, shuffle=True, num_workers=n_workers, prefetch_factor=args.prefetch_image, collate_fn=collate_fn, batch_size=total_train_batch_size, drop_last=True, persistent_workers=True
