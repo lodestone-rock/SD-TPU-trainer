@@ -593,7 +593,7 @@ def main():
             if args.enable_jax_profiler_at_start or args.show_tpu_usage_delta:
                 jax.profiler.save_device_memory_profile("prior_memory{steps}.prof".format(steps=global_step + 1))
             
-            print(np.std(batch["pixel_values"][0]), np.mean(batch["pixel_values"][0]))
+            print(np.std(batch["pixel_values"][0]), np.mean(batch["pixel_values"][0]), np.max(batch["pixel_values"][0]), np.min(batch["pixel_values"][0]))
 
             state, train_metric, train_rngs = p_train_step(state, text_encoder_params, vae_params, batch, train_rngs)
             train_metrics.append(train_metric)
