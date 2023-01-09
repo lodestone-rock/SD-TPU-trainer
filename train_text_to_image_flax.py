@@ -519,6 +519,7 @@ def main():
             noisy_latents = noise_scheduler.add_noise(latents, noise, timesteps)
 
             # Get the text embedding for conditioning
+            print(batch["input_ids"])
             encoder_hidden_states = text_encoder(
                 batch["input_ids"],
                 params=text_encoder_params,
