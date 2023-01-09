@@ -395,7 +395,7 @@ def main():
 
     def preprocess_train(examples):
         images = [image.convert("RGB") for image in examples[image_column]]
-        print(images[0])
+        print(np.array(images[0]).min(),np.array(images[0]).max(), np.array(images[0]).mean(),np.array(images[0]).std())
         examples["pixel_values"] = [train_transforms(image) for image in images]
         examples["input_ids"] = tokenize_captions(examples)
 
