@@ -580,12 +580,13 @@ def main():
     logger.info(f"  Total train batch size (w. parallel & distributed) = {total_train_batch_size}")
     logger.info(f"  Total optimization steps = {args.max_train_steps}")
 
+    load_the_damn_data_into_memory_ffs = [x for x in train_dataloader]
+    #print(len(load_the_damn_data_into_memory_ffs))
+    logger.info(f"  dataset size = {len(load_the_damn_data_into_memory_ffs)}")
     global_step = 0
 
     epochs = tqdm(range(args.num_train_epochs), desc="Epoch ... ", position=0)
 
-    load_the_damn_data_into_memory_ffs = [x for x in train_dataloader]
-    print(len(load_the_damn_data_into_memory_ffs))
   
     for epoch in epochs:
         # ======================== Training ================================
