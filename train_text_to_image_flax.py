@@ -395,7 +395,7 @@ def main():
 
     def preprocess_train(examples):
         images = [image.convert("RGB") for image in examples[image_column]]
-        print(np.array(images[0]).min(),np.array(images[0]).max(), np.array(images[0]).mean(),np.array(images[0]).std())
+        #print(np.array(images[0]).min(),np.array(images[0]).max(), np.array(images[0]).mean(),np.array(images[0]).std())
         examples["pixel_values"] = [train_transforms(image) for image in images]
         examples["input_ids"] = tokenize_captions(examples)
 
@@ -520,7 +520,7 @@ def main():
             noisy_latents = noise_scheduler.add_noise(latents, noise, timesteps)
 
             # Get the text embedding for conditioning
-            print(batch["input_ids"])
+            #print(batch["input_ids"])
             encoder_hidden_states = text_encoder(
                 batch["input_ids"],
                 params=text_encoder_params,
@@ -581,6 +581,9 @@ def main():
     global_step = 0
 
     epochs = tqdm(range(args.num_train_epochs), desc="Epoch ... ", position=0)
+
+    load_the_damn_data_into_memory_ffs = [x for x in train_dataloader]
+  
     for epoch in epochs:
         # ======================== Training ================================
 
@@ -589,12 +592,12 @@ def main():
         steps_per_epoch = len(train_dataset) // total_train_batch_size
         train_step_progress_bar = tqdm(total=steps_per_epoch, desc="Training...", position=1, leave=False)
         # train
-        for batch in train_dataloader:
+        for batch in load_the_damn_data_into_memory_ffs:
 
             if args.enable_jax_profiler_at_start or args.show_tpu_usage_delta:
                 jax.profiler.save_device_memory_profile("prior_memory{steps}.prof".format(steps=global_step + 1))
             
-            print(np.std(batch["pixel_values"][0]), np.mean(batch["pixel_values"][0]), np.max(batch["pixel_values"][0]), np.min(batch["pixel_values"][0]))
+            #print(np.std(batch["pixel_values"][0]), np.mean(batch["pixel_values"][0]), np.max(batch["pixel_values"][0]), np.min(batch["pixel_values"][0]))
 
             state, train_metric, train_rngs = p_train_step(state, text_encoder_params, vae_params, batch, train_rngs)
             train_metrics.append(train_metric)
