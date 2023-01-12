@@ -585,6 +585,7 @@ def main():
     epochs = tqdm(range(args.num_train_epochs), desc="Epoch ... ", position=0)
 
     load_the_damn_data_into_memory_ffs = [x for x in train_dataloader]
+    print(len(load_the_damn_data_into_memory_ffs))
   
     for epoch in epochs:
         # ======================== Training ================================
