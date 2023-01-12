@@ -652,7 +652,7 @@ def main():
 
 
 if __name__ == "__main__":
-    with jax.default_matmul_precision("float32"):
+    with jax.default_matmul_precision("bfloat16"):
         main()
 
     
