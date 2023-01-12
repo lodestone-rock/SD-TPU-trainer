@@ -493,6 +493,8 @@ def main():
     def train_step(state, text_encoder_params, vae_params, batch, train_rng):
         dropout_rng, sample_rng, new_train_rng = jax.random.split(train_rng, 3)
 
+        jax.debug.print("TPU rng => {}", train_rng)
+
         def compute_loss(params):
             # Convert images to latent space
             vae_outputs = vae.apply(
@@ -549,7 +551,7 @@ def main():
     #jit_train_step = jax.jit(train_step, donate_argnums=(0,), backend="cpu")
 
 # Create parallel version of the train step
-    p_train_step = jax.pmap(train_step, "batch", donate_argnums=(0,)).block_until_ready()
+    p_train_step = jax.pmap(train_step, "batch", donate_argnums=(0,))
 
 # Replicate the train state on each device
     state = jax_utils.replicate(state)
@@ -598,7 +600,7 @@ def main():
                 jax.profiler.save_device_memory_profile("prior_memory{steps}.prof".format(steps=global_step + 1))
             
             #print(np.std(batch["pixel_values"][0]), np.mean(batch["pixel_values"][0]), np.max(batch["pixel_values"][0]), np.min(batch["pixel_values"][0]))
-
+            print("current_rng => ", train_rngs)
             state, train_metric, train_rngs = p_train_step(state, text_encoder_params, vae_params, batch, train_rngs)
             train_metrics.append(train_metric)
 
