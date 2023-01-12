@@ -493,7 +493,7 @@ def main():
     def train_step(state, text_encoder_params, vae_params, batch, train_rng):
         dropout_rng, sample_rng, new_train_rng = jax.random.split(train_rng, 3)
 
-        jax.debug.print("TPU rng => {}", train_rng)
+        #jax.debug.print("TPU rng => {}", train_rng)
 
         def compute_loss(params):
             # Convert images to latent space
