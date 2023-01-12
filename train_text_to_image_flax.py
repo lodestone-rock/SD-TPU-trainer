@@ -549,7 +549,7 @@ def main():
     #jit_train_step = jax.jit(train_step, donate_argnums=(0,), backend="cpu")
 
 # Create parallel version of the train step
-    p_train_step = jax.pmap(train_step, "batch", donate_argnums=(0,))
+    p_train_step = jax.pmap(train_step, "batch", donate_argnums=(0,)).block_until_ready()
 
 # Replicate the train state on each device
     state = jax_utils.replicate(state)
@@ -599,7 +599,7 @@ def main():
             
             #print(np.std(batch["pixel_values"][0]), np.mean(batch["pixel_values"][0]), np.max(batch["pixel_values"][0]), np.min(batch["pixel_values"][0]))
 
-            state, train_metric, train_rngs = p_train_step(state, text_encoder_params, vae_params, batch, train_rngs).block_until_ready()
+            state, train_metric, train_rngs = p_train_step(state, text_encoder_params, vae_params, batch, train_rngs)
             train_metrics.append(train_metric)
 
             train_step_progress_bar.update(1)
