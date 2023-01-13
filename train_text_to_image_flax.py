@@ -581,6 +581,7 @@ def main():
     logger.info(f"  Total optimization steps = {args.max_train_steps}")
 
     load_the_damn_data_into_memory_ffs = [x for x in train_dataloader]
+    load_the_damn_data_into_memory_ffs = [load_the_damn_data_into_memory_ffs + load_the_damn_data_into_memory_ffs for _ in range(4)]
     #print(len(load_the_damn_data_into_memory_ffs))
     logger.info(f"  dataset size = {len(load_the_damn_data_into_memory_ffs)}")
     global_step = 0
