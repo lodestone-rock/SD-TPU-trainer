@@ -586,14 +586,14 @@ def main():
     global_step = 0
 
     epochs = tqdm(range(args.num_train_epochs), desc="Epoch ... ", position=0)
-    steps_per_epoch = len(train_dataset) // total_train_batch_size
+
   
     for epoch in epochs:
         # ======================== Training ================================
 
-        #train_metrics = []
+        train_metrics = []
 
-        
+        steps_per_epoch = len(train_dataset) // total_train_batch_size
         train_step_progress_bar = tqdm(total=steps_per_epoch, desc="Training...", position=1, leave=False)
         # train
         for batch in load_the_damn_data_into_memory_ffs:
@@ -604,7 +604,7 @@ def main():
             #print(np.std(batch["pixel_values"][0]), np.mean(batch["pixel_values"][0]), np.max(batch["pixel_values"][0]), np.min(batch["pixel_values"][0]))
             #print("current_rng => ", train_rngs)
             state, train_metric, train_rngs = p_train_step(state, text_encoder_params, vae_params, batch, train_rngs)
-            #train_metrics.append(train_metric)
+            train_metrics.append(train_metric)
 
             train_step_progress_bar.update(1)
 
@@ -621,10 +621,10 @@ def main():
             
 
 
-        #train_metric = jax_utils.unreplicate(train_metric)
+        train_metric = jax_utils.unreplicate(train_metric)
 
-        #train_step_progress_bar.close()
-        epochs.write(f"Epoch... ({epoch + 1}/{args.num_train_epochs})")
+        train_step_progress_bar.close()
+        epochs.write(f"Epoch... ({epoch + 1}/{args.num_train_epochs} | Loss: {train_metric['loss']})")
 
 # Create the pipeline using using the trained modules and save it.
     if jax.process_index() == 0:
