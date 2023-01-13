@@ -604,7 +604,7 @@ def main():
             #print(np.std(batch["pixel_values"][0]), np.mean(batch["pixel_values"][0]), np.max(batch["pixel_values"][0]), np.min(batch["pixel_values"][0]))
             #print("current_rng => ", train_rngs)
             state, train_metric, train_rngs = p_train_step(state, text_encoder_params, vae_params, batch, train_rngs)
-            train_metrics.append(train_metric)
+            #train_metrics.append(train_metric)
 
             train_step_progress_bar.update(1)
 
