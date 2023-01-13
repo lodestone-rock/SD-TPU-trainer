@@ -593,8 +593,8 @@ def main():
 
         #train_metrics = []
 
-        steps_per_epoch = len(train_dataset) // total_train_batch_size
-        train_step_progress_bar = tqdm(total=steps_per_epoch, desc="Training...", position=1, leave=False)
+        #steps_per_epoch = len(train_dataset) // total_train_batch_size
+        #train_step_progress_bar = tqdm(total=steps_per_epoch, desc="Training...", position=1, leave=False)
         # train
         for batch in load_the_damn_data_into_memory_ffs:
 
@@ -623,7 +623,7 @@ def main():
 
         #train_metric = jax_utils.unreplicate(train_metric)
 
-        train_step_progress_bar.close()
+        #train_step_progress_bar.close()
         epochs.write(f"Epoch... ({epoch + 1}/{args.num_train_epochs})")
 
 # Create the pipeline using using the trained modules and save it.
